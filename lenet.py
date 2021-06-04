@@ -3,16 +3,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class LeNet(nn.Module):
+class LeNet5(nn.Module):
 
-    def __init__(self, n_classes):
-        super(LeNet, self).__init__()
+    def __init__(self, n_classes=10):
+        super(LeNet5, self).__init__()
 
         self.C1 = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1),
-            nn.Tanh()
+            nn.Tanh()  # Original network uses a scaled hyperbolic tangent
         )
-        self.S2 = nn.AvgPool2d(kernel_size=2)
+        self.S2 = nn.AvgPool2d(kernel_size=2)   # Original network uses a more complex version of average pooling
         self.C3 = nn.Sequential(
             nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1),
             nn.Tanh()
@@ -31,8 +31,8 @@ class LeNet(nn.Module):
     def forward(self, x):
         feature_extractor = nn.Sequential(self.C1, self.S2, self.C3, self.S4, self.C5)
         classifier = nn.Sequential(self.F6, self.output)
-        x = feature_extractor(x)
-        x = torch.flatten(x, 1)
-        logits = classifier(x)
-        probs = F.softmax(logits, dim=1)
+        y = feature_extractor(x)
+        y = torch.flatten(y, 1)
+        logits = classifier(y)
+        probs = F.softmax(logits, dim=1)  # Original network uses RBF output
         return logits, probs
